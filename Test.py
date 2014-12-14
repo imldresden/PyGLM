@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, math
-from libavg import avg, player, testcase, testapp
+from libavg import player, testcase, testapp
 
 player.loadPlugin('pyglm')
 
@@ -81,9 +81,19 @@ class GLMTestCase(testcase.AVGTestCase):
         self.assertRaises(Exception, lambda: pyglm.vec3(0,))
         self.assertRaises(Exception, lambda: pyglm.vec3(0,1,2,3))
 
+    def testQuat(self):
+        euler1 = pyglm.vec3(math.pi/2,0,0)
+        q = pyglm.quat(euler1)
+        euler2 = q.toEuler()
+        self.assertEqual(euler1, euler2)
+        v1 = pyglm.vec3(0,10,0)
+        v2 = q*v1
+        self.assertEqual(v2, (0,0,10))
+
 def pyglmTestSuite(tests):
     availableTests = (
         "testVec3",
+        "testQuat",
         )
     return testcase.createAVGTestSuite(availableTests, GLMTestCase, tests)
 

@@ -126,6 +126,14 @@ glm::vec3* createVec3()
     return new glm::vec3(0,0,0);
 }
 
+namespace QuatHelper
+{
+    glm::vec3 getEuler(const glm::quat& q)
+    {
+        return glm::eulerAngles(q);
+    }
+}
+
 
 BOOST_PYTHON_MODULE(pyglm)
 {
@@ -156,6 +164,12 @@ BOOST_PYTHON_MODULE(pyglm)
         .def(self / float())
     ;    
     
+    class_<glm::quat>("quat", no_init)
+        .def(init<float, float, float, float>())
+        .def(init<const glm::vec3&>())
+        .def("toEuler", &QuatHelper::getEuler)
+        .def(self * glm::vec3())
+    ;
 }
 
 AVG_PLUGIN_API PyObject* registerPlugin()
