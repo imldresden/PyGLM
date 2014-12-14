@@ -90,6 +90,17 @@ class GLMTestCase(testcase.AVGTestCase):
         v2 = q*v1
         self.assertEqual(v2, (0,0,10))
 
+        invQ = q.getInverse()
+        v3 = invQ*v2
+        self.assert_(testcase.almostEqual(v1, v3, 0.00001))
+
+        euler2 = pyglm.vec3(0,0,0)
+        q2 = pyglm.quat(euler2)
+        qMix = pyglm.quat.slerp(q, q2, 0.5)
+        eulerMix = qMix.toEuler()
+        self.assert_(testcase.almostEqual(eulerMix, (math.pi/4,0,0), 0.00001))
+
+
 def pyglmTestSuite(tests):
     availableTests = (
         "testVec3",

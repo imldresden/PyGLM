@@ -132,6 +132,17 @@ namespace QuatHelper
     {
         return glm::eulerAngles(q);
     }
+
+    glm::quat getInverse(const glm::quat& q)
+    {
+        return glm::inverse(q);
+    }
+
+    glm::quat slerp(const glm::quat& q1, const glm::quat& q2, float part)
+    {
+        return glm::slerp(q1, q2, part);
+    }
+
 }
 
 
@@ -168,6 +179,9 @@ BOOST_PYTHON_MODULE(pyglm)
         .def(init<float, float, float, float>())
         .def(init<const glm::vec3&>())
         .def("toEuler", &QuatHelper::getEuler)
+        .def("getInverse", &QuatHelper::getInverse)
+        .def("slerp", &QuatHelper::slerp)
+        .staticmethod("slerp")
         .def(self * glm::vec3())
     ;
 }
