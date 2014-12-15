@@ -128,6 +128,51 @@ glm::vec3* createVec3()
 
 namespace QuatHelper
 {
+    int len(const glm::quat&) 
+    {
+        return 4;
+    }
+
+    float getX(const glm::quat& q)
+    {
+        return q.x;
+    }
+
+    float getY(const glm::quat& q)
+    {
+        return q.y;
+    }
+
+    float getZ(const glm::quat& q)
+    {
+        return q.z;
+    }
+
+    float getW(const glm::quat& q)
+    {
+        return q.w;
+    }
+
+    void setX(glm::quat& q, float val)
+    {
+        q.x = val;
+    }
+
+    void setY(glm::quat& q, float val)
+    {
+        q.y = val;
+    }
+
+    void setZ(glm::quat& q, float val)
+    {
+        q.z = val;
+    }
+
+    void setW(glm::quat& q, float val)
+    {
+        q.w = val;
+    }
+
     glm::vec3 getEuler(const glm::quat& q)
     {
         return glm::eulerAngles(q);
@@ -143,6 +188,66 @@ namespace QuatHelper
         return glm::slerp(q1, q2, part);
     }
 
+    string str(const glm::quat& q)
+    {
+        stringstream st;
+        st << "(" << q.w << "," << q.x << "," << q.y << "," << q.z << ")";
+        return st.str();
+    }
+
+    string repr(const glm::quat& q)
+    {
+        stringstream st;
+        st << "pyglm.quat(" << q.w << "," << q.x << "," << q.y << "," << q.z << ")";
+        return st.str();
+    }
+
+    void checkItemRange(int i) {
+        if (i < 0 || i > 3) {
+            throw std::out_of_range("Index out of range for quat. Must be [0..3].");
+        }
+    }
+
+    float getItem(const glm::quat& q, int i)
+    {
+        checkItemRange(i);
+        switch (i) {
+            case 0:
+                return q.w;
+            case 1:
+                return q.x;
+            case 2:
+                return q.y;
+            case 3:
+                return q.z;
+            default:
+                AVG_ASSERT(false);
+                return 0;
+        }
+    }
+
+    void setItem(glm::quat& q, int i, float val)
+    {
+        checkItemRange(i);
+        switch (i) {
+            case 0:
+                q.w = val;
+            case 1:
+                q.x = val;
+            case 2:
+                q.y = val;
+            case 3:
+                q.z = val;
+            default:
+                AVG_ASSERT(false);
+        }
+    }
+
+}
+
+glm::quat* createQuat()
+{
+    return new glm::quat(0,0,0,0);
 }
 
 
@@ -176,8 +281,18 @@ BOOST_PYTHON_MODULE(pyglm)
     ;    
     
     class_<glm::quat>("quat", no_init)
+        .def("__init__", make_constructor(createQuat))
         .def(init<float, float, float, float>())
         .def(init<const glm::vec3&>())
+        .def("__setitem__", &QuatHelper::setItem)
+        .add_property("x", &QuatHelper::getX, &QuatHelper::setX,"")
+        .add_property("y", &QuatHelper::getY, &QuatHelper::setY,"")
+        .add_property("z", &QuatHelper::getZ, &QuatHelper::setZ,"")
+        .add_property("w", &QuatHelper::getW, &QuatHelper::setW,"")
+        .def("__len__", &QuatHelper::len)
+        .def("__getitem__", &QuatHelper::getItem)
+        .def("__str__", &QuatHelper::str)
+        .def("__repr__", &QuatHelper::repr)
         .def("toEuler", &QuatHelper::getEuler)
         .def("getInverse", &QuatHelper::getInverse)
         .def("slerp", &QuatHelper::slerp)
