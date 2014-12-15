@@ -94,6 +94,17 @@ class GLMTestCase(testcase.AVGTestCase):
         v3 = invQ*v2
         self.assert_(testcase.almostEqual(v1, v3, 0.00001))
 
+        q2 = pyglm.quat(0.5,1,-1,0)
+
+        self.assertEqual(q2[0], q2.w)
+        self.assertEqual(q2[1], q2.x)
+        self.assertEqual(q2[2], q2.y)
+        self.assertEqual(q2[3], q2.z)
+
+        self.assertEqual(str(q2), "(0.5,1,-1,0)")
+        q3 = eval(repr(q2))
+        self.assertAlmostEqual(q3, q2)
+
         euler2 = pyglm.vec3(0,0,0)
         q2 = pyglm.quat(euler2)
         qMix = pyglm.quat.slerp(q, q2, 0.5)
