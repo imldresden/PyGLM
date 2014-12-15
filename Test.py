@@ -100,6 +100,8 @@ class GLMTestCase(testcase.AVGTestCase):
         self.assertEqual(q2[1], q2.x)
         self.assertEqual(q2[2], q2.y)
         self.assertEqual(q2[3], q2.z)
+        self.assertEqual(len(q), 4)
+        self.assertRaises(IndexError, lambda: q[4])
 
         self.assertEqual(str(q2), "(0.5,1,-1,0)")
         q3 = eval(repr(q2))
