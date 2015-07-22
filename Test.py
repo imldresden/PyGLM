@@ -81,6 +81,8 @@ class GLMTestCase(testcase.AVGTestCase):
         self.assertRaises(Exception, lambda: pyglm.vec3(0,))
         self.assertRaises(Exception, lambda: pyglm.vec3(0,1,2,3))
 
+        self.assertEqual(pyglm.vec3.dot(pyglm.vec3(1,0,0), pyglm.vec3(1,0,0)), 1)
+
     def testQuat(self):
         euler1 = pyglm.vec3(math.pi/2,0,0)
         q = pyglm.quat(euler1)

@@ -119,6 +119,11 @@ namespace Vec3Helper
     {
         return glm::length(pt);
     }
+
+    float dot(const glm::vec3& pt1, const glm::vec3& pt2)
+    {
+        return glm::dot(pt1, pt2);
+    }
 }
 
 glm::vec3* createVec3()
@@ -278,6 +283,8 @@ BOOST_PYTHON_MODULE(pyglm)
         .def(float() * self)
         .def(self * float())
         .def(self / float())
+        .def("dot", &Vec3Helper::dot)
+        .staticmethod("dot")
     ;    
     
     class_<glm::quat>("quat", no_init)
