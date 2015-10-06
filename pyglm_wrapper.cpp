@@ -1,13 +1,21 @@
 #ifndef _pyglm_wrapper_H_
 #define _pyglm_wrapper_H_
 
-#include <base/GeomHelper.h>
+//#include <base/GeomHelper.h>
 
-#include <wrapper/raw_constructor.hpp>
-#include <wrapper/WrapHelper.h>
+//#include <wrapper/raw_constructor.hpp>
+//#include <wrapper/WrapHelper.h>
+
+#include <boost/python.hpp>
+#include <glm/glm.hpp>
+
+#define GLM_FORCE_RADIANS
+#include <glm/gtc/quaternion.hpp>
+
+#include <string>
 
 using namespace boost::python;
-using namespace avg;
+using namespace std;
 
 namespace Vec3Helper
 {
@@ -63,7 +71,7 @@ namespace Vec3Helper
             case 2:
                 return pt.z;
             default:
-                AVG_ASSERT(false);
+                assert(false);
                 return 0;
         }
     }
@@ -79,7 +87,7 @@ namespace Vec3Helper
             case 2:
                 pt.z = val;
             default:
-                AVG_ASSERT(false);
+                assert(false);
         }
     }
 
@@ -108,7 +116,7 @@ namespace Vec3Helper
     glm::vec3 safeGetNormalized(const glm::vec3& pt)
     {
         if (pt.x==0 && pt.y==0 && pt.z==0) {
-            throw Exception(AVG_ERR_OUT_OF_RANGE, "Can't normalize (0,0,0).");
+            throw range_error("Can't normalize (0,0,0).");
         } else {
             float invNorm = 1/sqrt(pt.x*pt.x+pt.y*pt.y+pt.z*pt.z);
             return glm::vec3(pt.x*invNorm, pt.y*invNorm, pt.z*invNorm);
@@ -226,7 +234,7 @@ namespace QuatHelper
             case 3:
                 return q.z;
             default:
-                AVG_ASSERT(false);
+                assert(false);
                 return 0;
         }
     }
@@ -244,7 +252,7 @@ namespace QuatHelper
             case 3:
                 q.z = val;
             default:
-                AVG_ASSERT(false);
+                assert(false);
         }
     }
 
