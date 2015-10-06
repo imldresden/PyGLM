@@ -15,6 +15,14 @@ find_package(LibXml2 REQUIRED)
 include_directories("${LIBXML2_INCLUDE_DIR}")
 target_link_libraries(pyglm ${LIBXML2_LIBRARIES})
 
+FIND_PACKAGE(Boost REQUIRED)
+INCLUDE_DIRECTORIES("${Boost_INCLUDE_DIRS}" "${PYTHON_INCLUDE_DIRS}")
+SET(Boost_USE_STATIC_LIBS OFF)
+SET(Boost_USE_MULTITHREADED ON)
+SET(Boost_USE_STATIC_RUNTIME OFF)
+FIND_PACKAGE(Boost COMPONENTS python)
+TARGET_LINK_LIBRARIES(pyglm ${Boost_LIBRARIES})
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 execute_process(COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"

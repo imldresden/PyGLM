@@ -316,17 +316,4 @@ BOOST_PYTHON_MODULE(pyglm)
     ;
 }
 
-AVG_PLUGIN_API PyObject* registerPlugin()
-{
-#if PY_MAJOR_VERSION < 3
-    initpyglm();
-    PyObject* pyGLMModule = PyImport_ImportModule("pyglm");
-#else
-    PyObject* pyGLMModule = PyInit_pyglm();
-#endif
-
-    return pyGLMModule;
-
-}
-
 #endif

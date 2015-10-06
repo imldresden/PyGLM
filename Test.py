@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
 import sys, math
-from libavg import player, testcase, testapp
-
-player.loadPlugin('pyglm')
+#from libavg import player, testcase, testapp
+import pyglm
 
 class GLMTestCase(testcase.AVGTestCase):
     def __init__(self, testFuncName):
