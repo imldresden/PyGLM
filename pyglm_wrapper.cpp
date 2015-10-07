@@ -1,11 +1,9 @@
 #ifndef _pyglm_wrapper_H_
 #define _pyglm_wrapper_H_
 
-//#include <base/GeomHelper.h>
-
-//#include <wrapper/raw_constructor.hpp>
 //#include <wrapper/WrapHelper.h>
 
+#include <Python.h>
 #include <boost/python.hpp>
 #include <glm/glm.hpp>
 
@@ -16,6 +14,53 @@
 
 using namespace boost::python;
 using namespace std;
+
+
+template<class VEC3, class ATTR>
+struct vec3_from_python
+{
+    vec3_from_python()
+    {
+        boost::python::converter::registry::push_back(
+                &convertible, &construct, boost::python::type_id<VEC3>());
+    }
+
+    static void* convertible(PyObject* obj_ptr)
+    {
+        if (!PySequence_Check(obj_ptr)) {
+            return 0;
+        }
+        if (PySequence_Size(obj_ptr) != 3) {
+            return 0;
+        }
+        if (PyString_Check(obj_ptr)) {
+            return 0;
+        }
+
+        return obj_ptr;
+    }
+
+    static void construct(PyObject* obj_ptr,
+            boost::python::converter::rvalue_from_python_stage1_data* data)
+    {
+        VEC3 t;
+        PyObject * pEntry = PySequence_GetItem(obj_ptr, 0);
+        t.x = (ATTR)PyFloat_AsDouble(pEntry);
+        Py_DECREF(pEntry);
+        pEntry = PySequence_GetItem(obj_ptr, 1);
+        t.y = (ATTR)PyFloat_AsDouble(pEntry);
+        Py_DECREF(pEntry);
+        pEntry = PySequence_GetItem(obj_ptr, 2);
+        t.z = (ATTR)PyFloat_AsDouble(pEntry);
+        Py_DECREF(pEntry);
+        void* storage = (
+                (boost::python::converter::rvalue_from_python_storage<VEC3>*)
+                        data)->storage.bytes;
+        new (storage) VEC3(t);
+        data->convertible = storage;
+    }
+};
+
 
 namespace Vec3Helper
 {
@@ -201,6 +246,12 @@ namespace QuatHelper
         return glm::slerp(q1, q2, part);
     }
 
+    bool almostEqual(const glm::quat& q1, const glm::quat& q2, float epsilon=0.00001)
+    {
+        return (fabs(q1.w-q2.w) < epsilon) && (fabs(q1.x-q2.x) < epsilon) &&
+                (fabs(q1.y-q2.y) < epsilon) && (fabs(q1.z-q2.z) < epsilon);
+    }
+
     string str(const glm::quat& q)
     {
         stringstream st;
@@ -263,9 +314,12 @@ glm::quat* createQuat()
     return new glm::quat(0,0,0,0);
 }
 
+BOOST_PYTHON_FUNCTION_OVERLOADS(quat_almostEqual_overloads, QuatHelper::almostEqual, 2, 3);
 
 BOOST_PYTHON_MODULE(pyglm)
 {
+    vec3_from_python<glm::vec3, float>();
+
     class_<glm::vec3>("vec3", no_init)
         .def("__init__", make_constructor(createVec3))
         .def(init<float, float, float>())
@@ -312,6 +366,8 @@ BOOST_PYTHON_MODULE(pyglm)
         .def("getInverse", &QuatHelper::getInverse)
         .def("slerp", &QuatHelper::slerp)
         .staticmethod("slerp")
+        .def("almostEqual", &QuatHelper::almostEqual, quat_almostEqual_overloads())
+        .staticmethod("almostEqual")
         .def(self * glm::vec3())
     ;
 }

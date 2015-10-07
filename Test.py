@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 
-import sys, math
-#from libavg import player, testcase, testapp
+import sys, math, unittest
 import pyglm
 
-class GLMTestCase(testcase.AVGTestCase):
-    def __init__(self, testFuncName):
-        testcase.AVGTestCase.__init__(self, testFuncName)
-
+class GLMTestCase(unittest.TestCase):
     def testVec3(self):
         def testHash():
             ptMap = {}
@@ -93,7 +89,7 @@ class GLMTestCase(testcase.AVGTestCase):
 
         invQ = q.getInverse()
         v3 = invQ*v2
-        self.assert_(testcase.almostEqual(v1, v3, 0.00001))
+        self.assertLess((v1-v3).getNorm(), 0.00001)
 
         q2 = pyglm.quat(0.5,1,-1,0)
 
@@ -106,25 +102,12 @@ class GLMTestCase(testcase.AVGTestCase):
 
         self.assertEqual(str(q2), "(0.5,1,-1,0)")
         q3 = eval(repr(q2))
-        self.assertAlmostEqual(q3, q2)
+        self.assert_(pyglm.quat.almostEqual(q3, q2))
 
         euler2 = pyglm.vec3(0,0,0)
         q2 = pyglm.quat(euler2)
         qMix = pyglm.quat.slerp(q, q2, 0.5)
         eulerMix = qMix.toEuler()
-        self.assert_(testcase.almostEqual(eulerMix, (math.pi/4,0,0), 0.00001))
+        self.assertAlmostEqual(eulerMix, (math.pi/4,0,0))
 
-
-def pyglmTestSuite(tests):
-    availableTests = (
-        "testVec3",
-        "testQuat",
-        )
-    return testcase.createAVGTestSuite(availableTests, GLMTestCase, tests)
-
-app = testapp.TestApp()
-
-app.registerSuiteFactory('pyglm', pyglmTestSuite)
-app.run()
-sys.exit(app.exitCode())
-
+unittest.main()
