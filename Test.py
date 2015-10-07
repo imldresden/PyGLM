@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 
 import sys, math, unittest
-import pyglm
+from libavg import player, testcase, testapp
+player.loadPlugin('pyglm')
 
-class GLMTestCase(unittest.TestCase):
+class GLMTestCase(testcase.AVGTestCase):
+    def __init__(self, testFuncName):
+        testcase.AVGTestCase.__init__(self, testFuncName)
+
     def testVec3(self):
         def testHash():
             ptMap = {}
@@ -12,7 +16,7 @@ class GLMTestCase(unittest.TestCase):
             ptMap[pyglm.vec3(0,0,0)] = 2
             self.assertEqual(len(ptMap), 2)
             self.assertEqual(ptMap[pyglm.vec3(0,0,0)], 2)
-        
+
         def testToTupleConversion():
             pt = pyglm.vec3(10, 20, 30)
             tpl = tuple(pt)
@@ -89,7 +93,7 @@ class GLMTestCase(unittest.TestCase):
 
         invQ = q.getInverse()
         v3 = invQ*v2
-        self.assertLess((v1-v3).getNorm(), 0.00001)
+        self.assert_(testcase.almostEqual(v1, v3, 0.00001))
 
         q2 = pyglm.quat(0.5,1,-1,0)
 
@@ -102,12 +106,24 @@ class GLMTestCase(unittest.TestCase):
 
         self.assertEqual(str(q2), "(0.5,1,-1,0)")
         q3 = eval(repr(q2))
-        self.assert_(pyglm.quat.almostEqual(q3, q2))
+        self.assertAlmostEqual(q3, q2)
 
         euler2 = pyglm.vec3(0,0,0)
         q2 = pyglm.quat(euler2)
         qMix = pyglm.quat.slerp(q, q2, 0.5)
         eulerMix = qMix.toEuler()
-        self.assertAlmostEqual(eulerMix, (math.pi/4,0,0))
+        self.assert_(testcase.almostEqual(eulerMix, (math.pi/4,0,0), 0.00001))
 
-unittest.main()
+
+def pyglmTestSuite(tests):
+    availableTests = (
+        "testVec3",
+        "testQuat",
+        )
+    return testcase.createAVGTestSuite(availableTests, GLMTestCase, tests)
+
+app = testapp.TestApp()
+
+app.registerSuiteFactory('pyglm', pyglmTestSuite)
+app.run()
+sys.exit(app.exitCode())
