@@ -38,3 +38,5 @@ TARGET_LINK_LIBRARIES(pyglm ${Boost_LIBRARIES})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 install(TARGETS pyglm LIBRARY DESTINATION ${AVG_LIB_PATH}/plugin)
+
+add_custom_target(run_install COMMAND sudo -A ${CMAKE_MAKE_PROGRAM} install)
