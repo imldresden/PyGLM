@@ -9,27 +9,32 @@ execute_process(COMMAND python -c "import os;import libavg;print os.path.dirname
         OUTPUT_VARIABLE AVG_LIB_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 include_directories("$ENV{AVG_PATH}/libavg/src")
-target_link_libraries(pyglm ${AVG_LIB_PATH}/avg.so)
+if (NOT APPLE)
+    target_link_libraries(pyglm ${AVG_LIB_PATH}/avg.so)
+endif()
 
 find_package(PythonLibs REQUIRED)
 include_directories("${PYTHON_INCLUDE_DIRS}")
 target_link_libraries(pyglm ${PYTHON_LIBRARIES})
 
-find_package(LibXml2 REQUIRED)
-include_directories("${LIBXML2_INCLUDE_DIR}")
-target_link_libraries(pyglm ${LIBXML2_LIBRARIES})
+if (APPLE)
+    execute_process(COMMAND xml2-config --cflags OUTPUT_VARIABLE LIBXML2_CFLAGS)
+    add_definitions(${LIBXML2_CFLAGS})
+    set(CMAKE_MODULE_LINKER_FLAGS "-undefined dynamic_lookup ${CMAKE_MODULE_LINKER_FLAGS} -lxml2")
+else()
+    find_package(LibXml2 REQUIRED)
+    include_directories("${LIBXML2_INCLUDE_DIR}")
+    target_link_libraries(pyglm ${LIBXML2_LIBRARIES})
+endif()
 
 FIND_PACKAGE(Boost REQUIRED)
 INCLUDE_DIRECTORIES("${Boost_INCLUDE_DIRS}" "${PYTHON_INCLUDE_DIRS}")
 SET(Boost_USE_STATIC_LIBS OFF)
 SET(Boost_USE_MULTITHREADED ON)
 SET(Boost_USE_STATIC_RUNTIME OFF)
-FIND_PACKAGE(Boost COMPONENTS python)
+FIND_PACKAGE(Boost COMPONENTS python system)
 TARGET_LINK_LIBRARIES(pyglm ${Boost_LIBRARIES})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-execute_process(COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
-        OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-install(TARGETS pyglm LIBRARY DESTINATION ${PYTHON_SITE_PACKAGES})
+install(TARGETS pyglm LIBRARY DESTINATION ${AVG_LIB_PATH}/plugin)
