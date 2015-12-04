@@ -39,4 +39,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 install(TARGETS pyglm LIBRARY DESTINATION ${AVG_LIB_PATH}/plugin)
 
-add_custom_target(run_install COMMAND sudo -A ${CMAKE_MAKE_PROGRAM} install)
+if (APPLE)
+    add_custom_target(run_install COMMAND osascript -e
+            "do shell script \\\"make install\\\" with administrator privileges")
+else ()
+    add_custom_target(run_install COMMAND sudo -A ${CMAKE_MAKE_PROGRAM} install)
+endif()
