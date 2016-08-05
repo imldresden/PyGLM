@@ -6,6 +6,7 @@
 #include <wrapper/raw_constructor.hpp>
 #include <wrapper/WrapHelper.h>
 
+#include <glm/gtc/quaternion.hpp>
 #include <string>
 
 using namespace boost::python;
@@ -182,6 +183,12 @@ namespace QuatHelper
         q.w = val;
     }
 
+    glm::vec3 getAxis(const glm::quat& q)
+    {
+        return glm::axis(q);
+    }
+
+
     glm::vec3 getEuler(const glm::quat& q)
     {
         return glm::eulerAngles(q);
@@ -209,6 +216,11 @@ namespace QuatHelper
         stringstream st;
         st << "pyglm.quat(" << q.w << "," << q.x << "," << q.y << "," << q.z << ")";
         return st.str();
+    }
+
+    glm::quat fromAxisAngle(const glm::vec3& v, float a)
+    {
+        return glm::angleAxis(a, v);
     }
 
     void checkItemRange(int i) {
@@ -299,6 +311,7 @@ BOOST_PYTHON_MODULE(pyglm)
         .add_property("y", &QuatHelper::getY, &QuatHelper::setY,"")
         .add_property("z", &QuatHelper::getZ, &QuatHelper::setZ,"")
         .add_property("w", &QuatHelper::getW, &QuatHelper::setW,"")
+        .add_property("axis", &QuatHelper::getAxis, "")
         .def("__len__", &QuatHelper::len)
         .def("__getitem__", &QuatHelper::getItem)
         .def("__str__", &QuatHelper::str)
@@ -308,6 +321,10 @@ BOOST_PYTHON_MODULE(pyglm)
         .def("slerp", &QuatHelper::slerp)
         .staticmethod("slerp")
         .def(self * glm::vec3())
+        .def(self * self)
+        .def(- self)
+        .def("fromAxisAngle", &QuatHelper::fromAxisAngle)
+        .staticmethod("fromAxisAngle")
     ;
 }
 

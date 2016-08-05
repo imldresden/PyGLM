@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, math, unittest
+import sys, math
 from libavg import player, testcase, testapp
 player.loadPlugin('pyglm')
 
@@ -63,10 +63,10 @@ class GLMTestCase(testcase.AVGTestCase):
         pt.z -= 15
         pt += pyglm.vec3(10, 10, 10)
         self.assertEqual(pt, pyglm.vec3(20, 20, 20))
-        pt -= pyglm.vec3(6, 6, 6)
+        pt = pyglm.vec3(pt) - pyglm.vec3(6, 6, 6)
         self.assertEqual(pt, pyglm.vec3(14, 14, 14))
         self.assertNotEqual(pt, pyglm.vec3(13, 13, 13))
-        pt = pt/2.
+        pt = pyglm.vec3(pt)/2.
         self.assertEqual(pt, pyglm.vec3(7, 7, 7))
         pt = pyglm.vec3((10, 10, 10))
         self.assertEqual(pt, (10, 10, 10))
@@ -113,6 +113,9 @@ class GLMTestCase(testcase.AVGTestCase):
         qMix = pyglm.quat.slerp(q, q2, 0.5)
         eulerMix = qMix.toEuler()
         self.assert_(testcase.almostEqual(eulerMix, (math.pi/4,0,0), 0.00001))
+
+        q1 = pyglm.quat.fromAxisAngle((0,0,1), math.pi/2)
+        self.assert_(testcase.almostEqual((0,0,1), q1.axis, 0.00001))
 
 
 def pyglmTestSuite(tests):
