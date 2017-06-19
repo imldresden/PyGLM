@@ -1,0 +1,12 @@
+pyglm - Exports selected glm functions to python.
+
+Depends on libavg and expects to find the libavg headers at compile time
+
+To compile:
+
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make -j5
+$ [sudo] make install
+
