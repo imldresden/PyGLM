@@ -1,4 +1,4 @@
-pyglm - Exports selected glm functions to python.
+pyglm - Simple wrapper that exports selected glm functions to python.
 
 Depends on libavg and expects to find the libavg headers at compile time
 
